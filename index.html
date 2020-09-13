@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    // constants bellow are default values for window.$$env fields
+    // it works following way:
+    // 1. when container is started with environment `MY_VAR_1="value"` then
+    //    startup script replaces ${MY_VAR_1} with provided value
+    //    so we have "var1: `value`"
+    // 2. when container is started without MY_VAR_1
+    //    startup script does not touch ${MY_VAR_1}
+    // 3. in browser "var1: `${MY_VAR_1}`" still in index.html
+    //    so expression interpolation in this template literal
+    //    takes local variable
+
+    const MY_VAR_0_MISSING_VAR = "default0";
+    const MY_VAR_1 = "default1";
+    const MY_VAR_2 = "default2";
+    const MY_VAR_3 = "default3";
+
+    // NOTE:
+    // treat all values as strings as you do when you work
+    // with environment variables on backend.
+    // even is you are sure that MY_VAR_1 is number,
+    // it should be a string here.
+    // you should write extra code (or use some config library)
+    // to safely convert these strings to expected types.
+    window.$$env = {
+      var0: `${MY_VAR_0_MISSING_VAR}`,
+      var1: `${MY_VAR_1}`,
+      var2: `${MY_VAR_2}`,
+      var3: `${MY_VAR_3}`,
+    };
+  </script>
+</head>
+<body>
+  <h1>Hello</h1>
+  <pre id="env"></pre>
+  <script>
+    document.getElementById('env').innerText = JSON.stringify(window.$$env, null, 2);
+  </script>
+</body>
+</html>

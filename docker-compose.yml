@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  web8080: # no environment provided, default values are used
+    build: ./
+    ports:
+      - "8080:80"
+  web8081: # only provided values are replaced, for other default values are used
+    build: ./
+    ports:
+      - "8081:80"
+    environment:
+      MY_VAR_1: 123
+      MY_VAR_3: some string with spaces
