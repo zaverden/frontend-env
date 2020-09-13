@@ -14,9 +14,23 @@ NOTE: [build-time VS deploy-time VS runtime](#build-time-vs-deploy-time-vs-runti
     docker-compose up --build
     ```
 2. Open `http://localhost:8080` and `http://localhost:8081` in browser
-3. Read comment in files
+3. Read comments in files
 
-## How to step by step
+## Short explanation
+1. You define your environment in `index.html` following way:
+    ```html
+    <script>
+        const API_BASE_URL = "http://localhost:8080"; // <- default value
+        window.$$env = {
+            apiBaseUrl: `${API_BASE_URL}`,
+        };
+    </script>
+    ```
+2. Run `envsubst` to replace `${API_BASE_URL}` with variable value
+3. Do not replace if variable is not present
+4. All values in `window.$$env` are strings, you need some code to convert them to expected types
+
+## How to, step by step
 
 ### index.html
 
@@ -66,8 +80,6 @@ not a final file.
 
 Magic happens here 🦄. Except no magic ~~🦄~~.
 
-Short: you use `envsubst` to replace `${API_BASE_URL}` with values, but adding some fancy staff.
-
 We want to achieve following:
 1. replace if environment variable is provided
 2. ignore if environment variable is not provided, so default value from `index.html` is used
@@ -75,6 +87,8 @@ We want to achieve following:
 An `nginx` image have this already, in `/docker-entrypoint.d/20-envsubst-on-templates.sh`.
 You can copy-paste it into your script, and update it to your needs. Or you can configure it with
 environment variables and call it as is.
+
+`envsubst` is used to do actual work of values replacement.
 
 
 ## Clean environment
