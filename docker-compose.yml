@@ -11,4 +11,5 @@ services:
       - "8081:80"
     environment:
       MY_VAR_1: 123
+      MY_VAR_2: "\"double quotes\" and 'single quotes' \\`back ticks\\`"
       MY_VAR_3: some string with spaces
