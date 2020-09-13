@@ -27,8 +27,11 @@ NOTE: [build-time VS deploy-time VS runtime](#build-time-vs-deploy-time-vs-runti
     </script>
     ```
 2. Run `envsubst` to replace `${API_BASE_URL}` with variable value
-3. Do not replace if variable is not present
-4. All values in `window.$$env` are strings, you need some code to convert them to expected types
+    ```shell
+    defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))
+    envsubst "$defined_envs" < "$template_path" > "$output_path"
+    ```
+3. All values in `window.$$env` are strings, you need some code to convert them to expected types
 
 ## How to, step by step
 
@@ -84,12 +87,12 @@ We want to achieve following:
 1. replace if environment variable is provided
 2. ignore if environment variable is not provided, so default value from `index.html` is used
 
-An `nginx` image have this already, in `/docker-entrypoint.d/20-envsubst-on-templates.sh`.
-You can copy-paste it into your script, and update it to your needs. Or you can configure it with
-environment variables and call it as is.
-
-`envsubst` is used to do actual work of values replacement.
-
+An `nginx` image have this already, in [`/docker-entrypoint.d/20-envsubst-on-templates.sh`](https://github.com/nginxinc/docker-nginx/blob/9774b522d4661effea57a1fbf64c883e699ac3ec/mainline/buster/20-envsubst-on-templates.sh).
+It does more then you need. If you extract essential lines you end up with:
+```shell
+defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))
+envsubst "$defined_envs" < "$template_path" > "$output_path"
+```
 
 ## Clean environment
 
@@ -97,17 +100,12 @@ If you don't use docker to serve static files, you still can use this approach. 
 lifecycle starting docker container is the same step as putting files to Amazon S3 - it is deploy step.
 
 I believe now it is clear that you just need to replicate what docker does on container start and
-do the same in your deployment procedure. And required part is in
-[00-envsubst-on-index.html.sh](./00-envsubst-on-index.html.sh).
-You take [script from an nginx image](https://github.com/nginxinc/docker-nginx/blob/9774b522d4661effea57a1fbf64c883e699ac3ec/mainline/buster/20-envsubst-on-templates.sh)
-and call it pointing template directory and output directory to the directory here your `index.html`
-is stored. And file should be called `index.html.template`.
-
-If you remove all existence/permission checks and folder walking, you end up with:
+do the same in your deployment procedure. Run
 ```shell
 defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))
 envsubst "$defined_envs" < "$template_path" > "$output_path"
 ```
+to convert your `index.html.template` from build artifacts to deployable `index.html`.
 
 [File an issue](https://github.com/zaverden/frontend-env/issues) if you have questions here.
 
