@@ -103,6 +103,12 @@ You take [script from an nginx image](https://github.com/nginxinc/docker-nginx/b
 and call it pointing template directory and output directory to the directory here your `index.html`
 is stored. And file should be called `index.html.template`.
 
+If you remove all existence/permission checks and folder walking, you end up with:
+```shell
+defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))
+envsubst "$defined_envs" < "$template_path" > "$output_path"
+```
+
 [File an issue](https://github.com/zaverden/frontend-env/issues) if you have questions here.
 
 ## build-time VS deploy-time VS runtime
